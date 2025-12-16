@@ -101,6 +101,9 @@ export function AMMTradingInterface({ pollAddress, options, question }: AMMTradi
   // Refetch all data after successful transactions
   useEffect(() => {
     if (isBuySuccess || isSellSuccess) {
+      // Dismiss all loading toasts first
+      toast.dismiss();
+      
       refetchBasePrices();
       refetchAdjustedPrices();
       refetchShares();
@@ -149,6 +152,7 @@ export function AMMTradingInterface({ pollAddress, options, question }: AMMTradi
 
   useEffect(() => {
     if (isApproveSuccess) {
+      toast.dismiss();
       refetchAllowance();
       setIsApproved(true);
       toast.success('✅ Tokens approved!');
@@ -177,6 +181,7 @@ export function AMMTradingInterface({ pollAddress, options, question }: AMMTradi
       return;
     }
 
+    toast.loading('Approving tokens...');
     try {
       writeApprove({
         address: MOCK_TOKEN_ADDRESS,
@@ -188,6 +193,7 @@ export function AMMTradingInterface({ pollAddress, options, question }: AMMTradi
         gas: 100000n,
       });
     } catch (error: any) {
+      toast.dismiss();
       toast.error('Approval failed: ' + error.message);
     }
   };
@@ -209,6 +215,7 @@ export function AMMTradingInterface({ pollAddress, options, question }: AMMTradi
       return;
     }
 
+    toast.loading('Buying shares...');
     try {
       writeBuy({
         address: pollAddress,
@@ -219,8 +226,8 @@ export function AMMTradingInterface({ pollAddress, options, question }: AMMTradi
         maxPriorityFeePerGas: 1000000n,
         gas: 500000n,
       });
-      toast.loading('Buying shares...');
     } catch (error: any) {
+      toast.dismiss();
       toast.error('Buy failed: ' + error.message);
     }
   };
@@ -244,6 +251,7 @@ export function AMMTradingInterface({ pollAddress, options, question }: AMMTradi
       return;
     }
 
+    toast.loading('Selling shares...');
     try {
       writeSell({
         address: pollAddress,
@@ -254,8 +262,8 @@ export function AMMTradingInterface({ pollAddress, options, question }: AMMTradi
         maxPriorityFeePerGas: 1000000n,
         gas: 500000n,
       });
-      toast.loading('Selling shares...');
     } catch (error: any) {
+      toast.dismiss();
       toast.error('Sell failed: ' + error.message);
     }
   };
